@@ -1,0 +1,7 @@
+# Paket dependency manager
+.paket/
+paket-files/
+
+# Dotnet build artifacts
+**/bin/
+**/obj/
