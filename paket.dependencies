@@ -1,5 +1,6 @@
 source https://api.nuget.org/v3/index.json
 
 storage: none
-nuget Expecto.FsCheck
-nuget FSharp.Core content: none
+nuget Expecto.FsCheck ~> 10
+nuget FSharp.Core ~> 8 content: none
+

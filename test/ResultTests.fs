@@ -18,7 +18,7 @@ module Configuration =
                     >> setField "args" args)
         }
 
-open org.chamalulu.Result
+open chamalulu.Result
 
 [<Tests>]
 let tests =
