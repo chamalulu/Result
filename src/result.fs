@@ -28,11 +28,26 @@ let inline traverse ([<InlineIfLambda>] traverser) source =
     let inline folder x result = map2 cons (traverser x) result
     Ok [] |> Seq.foldBack folder source
 
+let inline traverseFirstError ([<InlineIfLambda>] traverser) (source: 'a seq) =
+
+    use etor = source.GetEnumerator()
+
+    let rec inner result =
+        if etor.MoveNext() then
+            match traverser etor.Current with
+            | Ok r -> inner (r::result)
+            | Error e -> Error e
+        else
+            Ok result
+    
+    inner []
+    |> Result.map List.rev
+
 let inline sequence source = traverse id source
 
-let inline try' f ([<InlineIfLambda>] emap) p =
+let inline try' f ([<InlineIfLambda>] emap) x =
     try
-        f p |> Ok
+        f x |> Ok
     with
         | e -> emap e |> Error
 
@@ -59,33 +74,3 @@ type MonadBuilder() =
     member inline _.ReturnFrom(result) = result
 
 let resultM = MonadBuilder()
-
-[<System.Obsolete>]
-let traverseListFirstError traverser list =
-
-    let rec inner result rest =
-        match rest with
-        | [] -> Ok result
-        | x::xs ->
-            match traverser x with
-            | Ok r -> inner (r::result) xs
-            | Error e -> Error e
-    
-    inner [] list
-    |> Result.map List.rev
-
-[<System.Obsolete>]
-let traverseSeqFirstError traverser (source: 'a seq) =
-
-    use etor = source.GetEnumerator()
-
-    let rec inner result =
-        if etor.MoveNext() then
-            match traverser etor.Current with
-            | Ok r -> inner (r::result)
-            | Error e -> Error e
-        else
-            Ok result
-
-    inner []
-    |> Result.map List.rev
