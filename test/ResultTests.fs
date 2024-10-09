@@ -89,11 +89,42 @@ let tests =
 
         testProperty "Monad associativity" <| fun f g r -> (r >>= (fun x -> f x >>= g)) = (r >>= f >>= g)
 
-        // Testing properties of `sequence` apply to `traverse id` and is good enough
         testProperty "Traversing sequence of zero or more ok results gives ok list of results in order." <|
+            fun xs -> traverse Ok xs = Ok xs
+        
+        testProperty "Traversing to first error of zero or more ok results gives ok list of results in order." <|
+            fun xs -> traverseFirstError Ok xs = Ok xs
+        
+        testProperty "Traversing sequence of one or more error results gives first error." <|
+            fun e es -> traverseFirstError Error (e::es) = Error e
+        
+        testProperty "Traversing sequence of mixed results gives first error." <|
+            fun x xs e es seed ->
+                let rng = new System.Random(seed)
+
+                let source =
+                    [
+                        yield Ok x
+                        yield Error e
+                        yield! xs |> List.map Ok
+                        yield! es |> List.map Error
+                    ]
+                    |> List.randomShuffleWith rng
+                
+                let expected =
+                    source
+                    |> List.find Result.isError
+                    |> Result.map List.singleton
+                
+                let result = traverseFirstError id source
+
+                result = expected
+
+        // Testing the following two properties of `sequence` apply to `traverse id` and is good enough
+        testProperty "Sequencing sequence of zero or more ok results gives ok list of results in order." <|
             fun xs -> sequence (List.map Ok xs) = Ok xs
         
-        testProperty "Traversing sequence of one or more error results gives error with collected errors in order." <|
+        testProperty "Sequencing sequence of one or more error results gives error with collected errors in order." <|
             fun es ess ->
                 let source = (es::ess) |> List.map Error
 
@@ -106,8 +137,10 @@ let tests =
 
                 result = expected
         
-        testProperty "Traversing sequence of mixed results gives error with collected errors in order." <|
-            fun x xs es ess ->
+        testProperty "Sequencing sequence of mixed results gives error with collected errors in order." <|
+            fun x xs es ess seed ->
+                let rng = new System.Random(seed)
+
                 let source =
                     [
                         yield Ok x
@@ -115,7 +148,7 @@ let tests =
                         yield! xs |> List.map Ok
                         yield! ess |> List.map Error
                     ]
-                    |> List.randomShuffle
+                    |> List.randomShuffleWith rng
 
                 let expected =
                     source
