@@ -4,6 +4,8 @@ This repository contains the module `chamalulu.ResultModule` which provides
 functions, operators and computation expression builders for the result type
 `Microsoft.FSharp.Core.FSharpResult`.
 
+![Build and Test](https://github.com/chamalulu/Result/actions/workflows/build-and-test.yml/badge.svg)
+
 ## Functions
 
 ```fs
