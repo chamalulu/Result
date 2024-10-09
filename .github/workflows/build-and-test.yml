@@ -24,6 +24,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet paket restore
     - name: Build
-      run: dotnet build ./test/ResultTests.fsproj --no-restore
+      run: dotnet build ./test/ResultTests.fsproj
     - name: Test
       run: dotnet run --project ./test/ResultTests.fsproj --no-build --verbosity normal
