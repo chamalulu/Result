@@ -17,6 +17,8 @@ let inline mapErrors ([<InlineIfLambda>] mapping) result = Result.mapError (List
 
 let inline firstError result = Result.mapError List.head result
 
+let inline toErrors result = Result.mapError List.singleton result
+
 let inline (<!>) ([<InlineIfLambda>] mapping: 'a -> 'b) (result: Result<'a,'e>) : Result<'b,'e> = Result.map mapping result
 
 let inline (<*>) application result = map2 (<|) application result

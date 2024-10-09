@@ -53,9 +53,21 @@ val inline firstError:
         Result<'a,'e>
 ```
 
-Produce first error of result if `Error`.
+Map error list result to result of first error.
 
 Simple convenience function equivalent to `Result.mapError List.head result`.
+
+---
+
+```fs
+val inline toErrors:
+    result: Result<'a,'e> ->
+        Result<'a,'e list>
+```
+
+Map error result to result of singleton list of errors.
+
+Simple convenience function equivalent to `Result.mapError List.singleton result`.
 
 ---
 

@@ -53,6 +53,12 @@ let tests =
         testProperty "firstError (Error (e::es)) -> Error e" <|
             fun e es -> firstError (Error (e::es)) = Error e
         
+        testProperty "toErrors (Ok a) -> Ok a" <|
+            fun a -> toErrors (Ok a) = Ok a
+        
+        testProperty "toErrors (Error e) -> Error [e]" <|
+            fun e -> toErrors (Error e) = Error [e]
+        
         testCase "firstError (Error []) -> throws ArgumentException" <| fun _ ->
             Expect.throwsT<System.ArgumentException>
                 (fun () -> firstError (Error []) |> ignore)

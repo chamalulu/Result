@@ -48,6 +48,13 @@ val inline mapErrors:
 /// <returns>Error with first error if result is Error, otherwise Ok</returns>
 val inline firstError: result: Result<'a,'e list> -> Result<'a,'e>
 
+/// <summary>Map error result to result of list of errors.</summary>
+/// <param name="result">Source result</param>
+/// <typeparam name="'a">Ok type of source</typeparam>
+/// <typeparam name="'e">Error type of source</typeparam>
+/// <returns>Error with singleton list of error if result is Error, otherwise Ok</returns>
+val inline toErrors: result: Result<'a,'e> -> Result<'a,'e list>
+
 /// <summary>Map result</summary>
 /// <param name="mapping">Map function 'a -> 'b</param>
 /// <param name="result">Source result</param>
