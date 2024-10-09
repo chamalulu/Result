@@ -8,7 +8,7 @@ module chamalulu.Result
 /// <typeparam name="'a">Ok type of first source result</typeparam>
 /// <typeparam name="'b">Ok type of second source result</typeparam>
 /// <typeparam name="'c">Ok type of result</typeparam>
-/// <typeparam name="'d">Error type</typeparam>
+/// <typeparam name="'e">Error element type</typeparam>
 /// <returns>Mapped result from given two results</returns>
 /// <remarks>
 /// map2 for Result constrains the error type parameter to be a list. The reason
@@ -33,26 +33,28 @@ val inline ofOption: error: 'e -> option: 'a option -> Result<'a,'e>
 /// <param name="mapping">Map function 'e -> 'f</param>
 /// <param name="result">Source result</param>
 /// <typeparam name="'a">Ok type</typeparam>
-/// <typeparam name="'e">Error type of source</typeparam>
-/// <typeparam name="'f">Error type of target</typeparam>
+/// <typeparam name="'e">Error element type of source</typeparam>
+/// <typeparam name="'f">Error element type of target</typeparam>
 /// <returns>Error with mapped errors if result is Error, otherwise Ok</returns>
 val inline mapErrors:
     [<InlineIfLambda>] mapping: ('e -> 'f) ->
     result: Result<'a,'e list> ->
         Result<'a,'f list>
 
-/// <summary>Produce first error of result if Error.</summary>
+/// <summary>Map error list result to result of first error.</summary>
 /// <param name="result">Source result</param>
 /// <typeparam name="'a">Ok type of source</typeparam>
-/// <typeparam name="'e">Error type of source</typeparam>
+/// <typeparam name="'e">Error element type of source</typeparam>
 /// <returns>Error with first error if result is Error, otherwise Ok</returns>
 val inline firstError: result: Result<'a,'e list> -> Result<'a,'e>
 
 /// <summary>Map error result to result of list of errors.</summary>
 /// <param name="result">Source result</param>
 /// <typeparam name="'a">Ok type of source</typeparam>
-/// <typeparam name="'e">Error type of source</typeparam>
-/// <returns>Error with singleton list of error if result is Error, otherwise Ok</returns>
+/// <typeparam name="'e">Error element type of source</typeparam>
+/// <returns>
+/// Error with singleton list of error if result is Error, otherwise Ok
+/// </returns>
 val inline toErrors: result: Result<'a,'e> -> Result<'a,'e list>
 
 /// <summary>Map result</summary>
@@ -72,10 +74,10 @@ val inline (<!>) :
 /// <param name="result">Source result</param>
 /// <typeparam name="'a">Ok type of source result</typeparam>
 /// <typeparam name="'b">Ok type of target result</typeparam>
-/// <typeparam name="'e">Error type</typeparam>
+/// <typeparam name="'e">Error element type</typeparam>
 /// <returns>
-/// Ok result of application applied to source result value if application and source is Ok,
-/// otherwise Error of (concatenated) errors
+/// Ok result of application applied to source result value if application and
+/// source is Ok, otherwise Error of (concatenated) errors.
 /// </returns>
 val inline (<*>) :
     application: Result<('a -> 'b),'e list> ->
@@ -88,20 +90,27 @@ val inline (<*>) :
 /// <typeparam name="'a">Ok type of source result</typeparam>
 /// <typeparam name="'e">Ok type of target result</typeparam>
 /// <typeparam name="'b">Error type</typeparam>
-/// <returns>Result of binder applied to source value if source is Ok, otherwise source Error</returns>
+/// <returns>
+/// Result of binder applied to source value if source is Ok, otherwise source
+/// Error.
+/// </returns>
 val inline (>>=) :
     result: Result<'a,'e> ->
     [<InlineIfLambda>] binder: ('a -> Result<'b,'e>) ->
         Result<'b,'e>
 
-/// <summary>Traverse source sequence with result-yielding function inverting effects of list and result.</summary>
+/// <summary>
+/// Traverse source sequence with result-yielding function inverting effects of
+/// list and result.
+/// </summary>
 /// <param name="traverser">Traversing function returning result</param>
 /// <param name="source">Sequence of values to traverse</param>
-/// <typeparam name="'a">Type of source values</typeparam>
-/// <typeparam name="'b">Ok type of result values</typeparam>
-/// <typeparam name="'e">Error type of result</typeparam>
+/// <typeparam name="'a">Element type of source sequence</typeparam>
+/// <typeparam name="'b">Ok element type of result</typeparam>
+/// <typeparam name="'e">Error element type of result</typeparam>
 /// <returns>
-/// Ok list of values returned from traverser if all are Ok, otherwise Error list of concatenated errors.
+/// Ok list of values returned from traverser if all are Ok, otherwise Error
+/// list of concatenated errors.
 /// </returns>
 val inline traverse:
     [<InlineIfLambda>] traverser: ('a -> Result<'b,'e list>) ->
@@ -114,8 +123,8 @@ val inline traverse:
 /// </summary>
 /// <param name="traverser">Traversing function returning result</param>
 /// <param name="source">Source sequence of values to traverse</param>
-/// <typeparam name="'a">Type of source values</typeparam>
-/// <typeparam name="'b">Ok type of result values</typeparam>
+/// <typeparam name="'a">Element type of source sequence</typeparam>
+/// <typeparam name="'b">Ok element type of result</typeparam>
 /// <typeparam name="'e">Error type of result</typeparam>
 /// <returns>
 /// Ok list of values returned from traverser if all are Ok, otherwise first
@@ -126,20 +135,31 @@ val inline traverseFirstError:
     source: 'a seq ->
         Result<'b list,'e>
 
-/// <summary>Traverse source sequence of results with identity function inverting effects of list and result.</summary>
+/// <summary>
+/// Traverse source sequence of results with identity function inverting effects
+/// of list and result.
+/// </summary>
 /// <param name="source">Source sequence of results</param>
-/// <typeparam name="'a">Ok type</typeparam>
-/// <typeparam name="'b">Error type</typeparam>
-/// <returns>Ok list of result values from source sequence if all are Ok, otherwise Error list of concatenated errors.</returns>
+/// <typeparam name="'a">Ok element type</typeparam>
+/// <typeparam name="'b">Error element type</typeparam>
+/// <returns>
+/// Ok list of result values from source sequence if all are Ok, otherwise Error
+/// list of concatenated errors.
+/// </returns>
 val inline sequence: source: Result<'a,'e list> seq -> Result<'a list,'e list>
 
-/// <summary>Wrap an exception-throwing function to a result-returning function.</summary>
+/// <summary>
+/// Wrap an exception-throwing function to a result-returning function.
+/// </summary>
 /// <param name="f">Exception-throwing function 'a -> 'b</param>
 /// <param name="emap">Map of exception to Error type</param>
 /// <typeparam name="'a">Parameter type of f</typeparam>
 /// <typeparam name="'b">Return type of f and Ok type of result</typeparam>
 /// <typeparam name="'e">Error type of result</typeparam>
-/// <returns>Function returning Error with mapped exception if f throws, otherwise returning Ok with return value of f</returns>
+/// <returns>
+/// Function returning Error with mapped exception if f throws, otherwise
+/// returning Ok with return value of f.
+/// </returns>
 val inline try':
     f: ('a -> 'b) ->
     [<InlineIfLambda>] emap: (exn -> 'e) ->
@@ -157,12 +177,18 @@ type FunctorBuilder =
             Result<'b,'e>
     
     /// <summary>Support `return`</summary>
-    member inline Return: x: 'a -> Result<'a,'e>
+    member inline Return:
+        x: 'a ->
+            Result<'a,'e>
 
-/// <summary>Computation expression builder instance for Result functor</summary>
+/// <summary>
+/// Computation expression builder instance for Result functor
+/// </summary>
 val resultF: FunctorBuilder
 
-/// <summary>Computation expression builder for Result applicative functor</summary>
+/// <summary>
+/// Computation expression builder for Result applicative functor
+/// </summary>
 type ApplicativeBuilder =
     inherit FunctorBuilder
     
@@ -174,7 +200,9 @@ type ApplicativeBuilder =
         result2: Result<'b,'e list> ->
             Result<struct ('a * 'b),'e list>
 
-/// <summary>Computation expression builder instance for Result applicative functor</summary>
+/// <summary>
+/// Computation expression builder instance for Result applicative functor
+/// </summary>
 val resultA: ApplicativeBuilder
 
 /// <summary>Computation expression builder for Result monad</summary>
@@ -190,7 +218,9 @@ type MonadBuilder =
             Result<'b,'e>
     
     /// <summary>Support `return!`</summary>
-    member inline ReturnFrom: result: 'a -> 'a
+    member inline ReturnFrom:
+        result: 'a ->
+            'a
 
 /// <summary>Computation expression builder instance for Result monad</summary>
 val resultM: MonadBuilder
