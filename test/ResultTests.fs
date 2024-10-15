@@ -95,10 +95,10 @@ let tests =
         testProperty "Traversing to first error of zero or more ok results gives ok list of results in order." <|
             fun xs -> traverseFirstError Ok xs = Ok xs
         
-        testProperty "Traversing sequence of one or more error results gives first error." <|
+        testProperty "Traversing to first error of one or more error results gives first error." <|
             fun e es -> traverseFirstError Error (e::es) = Error e
         
-        testProperty "Traversing sequence of mixed results gives first error." <|
+        testProperty "Traversing to first error of mixed results gives first error." <|
             fun x xs e es seed ->
                 let rng = new System.Random(seed)
 
@@ -120,10 +120,10 @@ let tests =
 
                 result = expected
 
-        // Testing the following two properties of `sequence` apply to `traverse id` and is good enough
         testProperty "Sequencing sequence of zero or more ok results gives ok list of results in order." <|
             fun xs -> sequence (List.map Ok xs) = Ok xs
         
+        // Testing the following two properties of `sequence` apply to `traverse id` and is good enough
         testProperty "Sequencing sequence of one or more error results gives error with collected errors in order." <|
             fun es ess ->
                 let source = (es::ess) |> List.map Error
